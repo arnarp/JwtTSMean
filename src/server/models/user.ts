@@ -1,7 +1,7 @@
 import mongoose = require('mongoose');
 import bcrypt = require('bcrypt');
 
-export var userSchema = new mongoose.Schema({
+var userSchema = new mongoose.Schema({
     email: String,
     password: String
 });
@@ -28,10 +28,17 @@ userSchema.method('toVm', function() {
     return user;
 })
 
+userSchema.method('comparePasswords',
+    function(password: string, callback: any) {
+        bcrypt.compare(password, this.password, callback);
+})
+
 export interface IUser extends mongoose.Document {
     email: string;
     password: string;
-    toVm(): IUser
+    toVm(): IUser,
+    comparePasswords(password: string,
+        callback: (err: Error, same: boolean) => void): void;
 }
 
 export var repository = mongoose.model<IUser>('User', userSchema);

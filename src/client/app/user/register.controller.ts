@@ -10,10 +10,11 @@ namespace app.user {
 
 	export class RegisterController implements IRegisterController {
 		static $inject: Array<string> = ['$http', 'userService',
-			'authService'];
+			'authService', '$state'];
 		constructor(private $http: ng.IHttpService,
 			private userService: app.user.IUserService,
-			private authService: app.core.IAuthService) {
+			private authService: app.core.IAuthService,
+			private $state: ng.ui.IStateService) {
 		}
 
 		/////	Properties		/////
@@ -23,7 +24,7 @@ namespace app.user {
 		/////	Methods			/////
 		submit() {
 			this.userService.register(this.email, this.password)
-				.then((resp) => this.authService.setToken(resp.token));
+				.then((resp) => this.$state.go('home'));
 		}
 	}
 

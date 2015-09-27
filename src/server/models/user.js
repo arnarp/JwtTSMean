@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
-exports.userSchema = new mongoose.Schema({
+var userSchema = new mongoose.Schema({
     email: String,
     password: String
 });
-exports.userSchema.pre('save', function (next) {
+userSchema.pre('save', function (next) {
     var user = this;
     if (!user.isModified('password')) {
         return next();
@@ -22,11 +22,14 @@ exports.userSchema.pre('save', function (next) {
         });
     });
 });
-exports.userSchema.method('toVm', function () {
+userSchema.method('toVm', function () {
     var user = this.toObject();
     delete user.password;
     console.log(user);
     return user;
 });
-exports.repository = mongoose.model('User', exports.userSchema);
+userSchema.method('comparePasswords', function (password, callback) {
+    bcrypt.compare(password, this.password, callback);
+});
+exports.repository = mongoose.model('User', userSchema);
 //# sourceMappingURL=user.js.map

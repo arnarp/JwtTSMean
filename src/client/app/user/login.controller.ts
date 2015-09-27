@@ -5,7 +5,10 @@ namespace app.user {
 		email: string;
 		password: string;
 		submit: () => void;
+<<<<<<< HEAD
 		google: () => void;
+=======
+>>>>>>> passport-auth
 	}
 
 	export class LoginController implements ILoginController {
@@ -25,10 +28,13 @@ namespace app.user {
 			this.userService.login(this.email, this.password)
 				.then(() => this.$state.go('home'));
 		}
+<<<<<<< HEAD
 
 		google = () => {
 			this.authService.googleAuth();
 		}
+=======
+>>>>>>> passport-auth
 	}
 
 	angular

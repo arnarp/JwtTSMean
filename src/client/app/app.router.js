@@ -49,6 +49,12 @@ var app;
             controller: 'RegisterController',
             controllerAs: 'vm'
         })
+            .state('login', {
+            url: '/user/login',
+            templateUrl: 'app/user/login.html',
+            controller: 'LoginController',
+            controllerAs: 'vm'
+        })
             .state('logout', {
             controller: 'LogoutController',
         })

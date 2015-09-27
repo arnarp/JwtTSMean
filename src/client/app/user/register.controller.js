@@ -4,19 +4,20 @@ var app;
     (function (user) {
         'use strict';
         var RegisterController = (function () {
-            function RegisterController($http, userService, authService) {
+            function RegisterController($http, userService, authService, $state) {
                 this.$http = $http;
                 this.userService = userService;
                 this.authService = authService;
+                this.$state = $state;
             }
             /////	Methods			/////
             RegisterController.prototype.submit = function () {
                 var _this = this;
                 this.userService.register(this.email, this.password)
-                    .then(function (resp) { return _this.authService.setToken(resp.token); });
+                    .then(function (resp) { return _this.$state.go('home'); });
             };
             RegisterController.$inject = ['$http', 'userService',
-                'authService'];
+                'authService', '$state'];
             return RegisterController;
         })();
         user.RegisterController = RegisterController;

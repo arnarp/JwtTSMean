@@ -5,14 +5,20 @@ var app;
         'use strict';
         var LoginController = (function () {
             function LoginController($http, userService, authService, $state) {
+<<<<<<< HEAD
                 var _this = this;
+=======
+>>>>>>> passport-auth
                 this.$http = $http;
                 this.userService = userService;
                 this.authService = authService;
                 this.$state = $state;
+<<<<<<< HEAD
                 this.google = function () {
                     _this.authService.googleAuth();
                 };
+=======
+>>>>>>> passport-auth
             }
             /////	Methods			/////
             LoginController.prototype.submit = function () {

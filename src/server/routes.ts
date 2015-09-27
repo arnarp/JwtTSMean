@@ -6,10 +6,12 @@ import mongoose = require('mongoose');
 import userController = require("./controllers/userController");
 //import jwtService = require('./services/jwtService');
 import jwtService = require('jwt-simple');
+import passport = require('passport');
 
 router.get('/people', getPeople);
 router.get('/person/:id', getPerson);
-router.post('/register', userController.register);
+router.post('/register', passport.authenticate('local-register'), userController.register);
+router.post('/login', passport.authenticate('local-login') ,userController.login);
 router.get('/*', four0four.notFoundMiddleware);
 
 module.exports = router;

@@ -1,14 +1,13 @@
 namespace app.user {
 	'use strict';
 
-	interface IRegisterController {
+	interface ILoginController {
 		email: string;
 		password: string;
-		password_confirm: string;
 		submit: () => void;
 	}
 
-	export class RegisterController implements IRegisterController {
+	export class LoginController implements ILoginController {
 		static $inject: Array<string> = ['$http', 'userService',
 			'authService', '$state'];
 		constructor(private $http: ng.IHttpService,
@@ -20,15 +19,14 @@ namespace app.user {
 		/////	Properties		/////
 		email: string;
 		password: string;
-		password_confirm: string;
 		/////	Methods			/////
 		submit() {
-			this.userService.register(this.email, this.password)
-				.then((resp) => this.$state.go('home'));
+			this.userService.login(this.email, this.password)
+				.then(() => this.$state.go('home'));
 		}
 	}
 
 	angular
 		.module('app.user')
-		.controller('RegisterController', RegisterController);
+		.controller('LoginController', LoginController);
 }

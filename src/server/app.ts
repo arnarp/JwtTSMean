@@ -10,6 +10,10 @@ import logger = require('morgan');
 var port = process.env.PORT || 8001;
 import { send404 } from './utils/404';  // use latest TS 1.5, inspired from ES6
 
+import passport = require('passport');
+import passportLocal = require('passport-local');
+var localStrat = passportLocal.Strategy;
+
 
 import mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/jwt');
@@ -21,11 +25,36 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(logger('dev'));
 
+app.use(passport.initialize());
+passport.serializeUser(function(usr, done) {
+    done(null, usr.id);
+});
+
 /*app.use(function(req: express.Request, res: express.Response, next: Function) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 });*/
+import userModel = require("./models/user");
+import IUser = userModel.IUser;
+import repository = userModel.repository;
+var stategy = new localStrat({ usernameField: 'email' }, function(email, password, done) {
+    repository.findOne({ email: email }, function(err, user) {
+        if (err) { return done(err); }
+        if (!user) {
+            return done(null, false, { message: 'Wrong Email/Password' });
+        }
+        user.comparePasswords(password, function(err, isMatch) {
+            if (err) { return done(err); }
+            if (!isMatch) {
+                return done(null, false, { message: 'Wrong Email/Password' });
+            } else {
+                return done(null, user);
+            }
+        })
+    });
+});
+passport.use(stategy);
 
 app.use('/api', require('./routes'));
 

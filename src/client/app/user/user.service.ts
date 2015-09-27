@@ -4,6 +4,8 @@ namespace app.user {
 	export interface IUserService {
 		register(email: string, password: string)
 			: ng.IPromise<UserLoginResp>;
+		login(email: string, password: string)
+			: ng.IPromise<UserLoginResp>;
 	}
 	export interface User {
 		email: string;
@@ -19,37 +21,63 @@ namespace app.user {
 
 	export class UserService implements IUserService {
 		static $inject: Array<string> = [
-			'$http', '$q', 'exception', 'logger'
+			'$http', '$q', 'exception', 'logger', 'authService'
 		];
 		constructor(
 			private $http: ng.IHttpService,
 			private $q: ng.IQService,
 			private exception: blocks.exception.IException,
-            private logger: blocks.logger.Logger) {
+            private logger: blocks.logger.Logger,
+			private authService: app.core.IAuthService) {
 		}
 
 		register = (email: string, password: string) =>
-			this.$http.post<UserLoginResp>(
-				'/api/register', { email: email, password: password })
-				.then<ng.IHttpPromiseCallbackArg<UserLoginResp>>(this.alertSuccess)
-				.then<ng.IHttpPromiseCallbackArg<UserLoginResp>>(this.success)
-				.catch(this.onRejected);
+			this.$http
+				.post<UserLoginResp>('/api/register', { email: email, password: password })
+				.then(this.extractData)
+				.then(this.setToken)
+				.then(this.alertRegisteredSuccess)
+				.catch(this.onRegisterRejected);
 
-        private success:
-		(response: ng.IHttpPromiseCallbackArg<UserLoginResp>) => UserLoginResp =
-			(response) => response.data;
+		login = (email: string, password: string) =>
+			this.$http
+				.post<UserLoginResp>('/api/login', { email: email, password: password })
+				.then(this.extractData)
+				.then(this.setToken)
+				.then(this.alertLoginSuccess)
+				.catch(this.onLoginRejected);
 
-		private alertSuccess:
-		(resp: ng.IHttpPromiseCallbackArg<UserLoginResp>) => 	ng.IHttpPromiseCallbackArg<UserLoginResp> =
-		(resp) => {
+        private extractData =
+		(response: ng.IHttpPromiseCallbackArg<UserLoginResp>) => response.data;
+
+		private alertRegisteredSuccess =
+		(resp: UserLoginResp) => {
 			this.logger.success(
-				`You, ${resp.data.user.email}, are now registered`, resp, 'Success');
+				`You, ${resp.user.email}, are now registered`, resp, 'Success');
 			return resp;
 		}
 
-		private onRejected: (resp: any) => {} = (resp) => {
+		private alertLoginSuccess =
+		(resp: UserLoginResp) => {
+			this.logger.success(`${resp.user.email} have been logged in`, resp, 'Success');
+			return resp;
+		}
+
+		private setToken = (resp: UserLoginResp) => {
+			this.authService.setToken(resp.token);
+			return resp;
+		}
+
+		private onRegisterRejected: (resp: any) => {} = (resp) => {
 			var msg = resp.data.description;
             var reason = 'post register user failed.';
+            this.exception.catcher(msg)(reason);
+            return this.$q.reject(msg);
+		}
+
+		private onLoginRejected: (resp: any) => {} = (resp) => {
+			var msg = resp.data.description;
+            var reason = 'login failed.';
             this.exception.catcher(msg)(reason);
             return this.$q.reject(msg);
 		}

@@ -1,0 +1,21 @@
+<section id="dashboard-view" class="mainbar">
+	<section class="matter">
+		<div class="container">
+			<form name="vm.login" novalidate ng-submit="vm.submit()">
+				<h1>Login</h1>
+				<input type="email" name="email" ng-model="vm.email" class="form-control">
+				<span class="help-block" ng-show="vm.register.email.$dirty && vm.register.email.$invalid">
+					Please fill out email
+				</span>
+				<input type="password" name="password" class="form-control" ng-model="vm.password" required placeholder="Password">
+				<button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="vm.register.$invalid">
+					Login
+				</button>
+			</form>
+			<hr>
+			<a class="text-muted pull-right" ui-sref="register">
+            	Register
+			</a>
+		</div>
+	</section>
+</section>

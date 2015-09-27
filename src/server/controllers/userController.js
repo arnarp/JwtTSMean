@@ -1,5 +1,6 @@
 var userModel = require("../models/user");
-var jwtService = require('../services/jwtService');
+//import jwtService = require('../services/jwtService');
+var jwtService = require('jwt-simple');
 var repository = userModel.repository;
 function register(req, res) {
     console.log('UserController register');

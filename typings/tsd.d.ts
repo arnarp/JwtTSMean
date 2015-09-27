@@ -18,3 +18,4 @@
 /// <reference path="mongodb/mongodb.d.ts" />
 /// <reference path="bcrypt/bcrypt.d.ts" />
 /// <reference path="crypto-js/crypto-js.d.ts" />
+/// <reference path="jwt-simple/jwt-simple.d.ts" />

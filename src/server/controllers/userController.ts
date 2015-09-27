@@ -1,7 +1,8 @@
 import express = require("express");
 import mongoose = require("mongoose");
 import userModel = require("../models/user");
-import jwtService = require('../services/jwtService');
+//import jwtService = require('../services/jwtService');
+import jwtService = require('jwt-simple');
 import IUser = userModel.IUser;
 import repository = userModel.repository;
 

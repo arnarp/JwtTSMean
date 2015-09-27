@@ -4,7 +4,8 @@ import * as four0four from './utils/404';
 import data = require('./data');
 import mongoose = require('mongoose');
 import userController = require("./controllers/userController");
-import jwtService = require('./services/jwtService');
+//import jwtService = require('./services/jwtService');
+import jwtService = require('jwt-simple');
 
 router.get('/people', getPeople);
 router.get('/person/:id', getPerson);

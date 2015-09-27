@@ -9,7 +9,7 @@ var port = process.env.PORT || 8001;
 var _404_1 = require('./utils/404'); // use latest TS 1.5, inspired from ES6
 var passport = require('passport');
 var passportLocal = require('passport-local');
-var localStrat = passportLocal.Strategy;
+var LocalStrategy = passportLocal.Strategy;
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/jwt');
 var environment = process.env.NODE_ENV;
@@ -28,7 +28,8 @@ passport.serializeUser(function (usr, done) {
 });*/
 var userModel = require("./models/user");
 var repository = userModel.repository;
-var stategy = new localStrat({ usernameField: 'email' }, function (email, password, done) {
+var strategyOptions = { usernameField: 'email' };
+var loginStrategy = new LocalStrategy(strategyOptions, function (email, password, done) {
     repository.findOne({ email: email }, function (err, user) {
         if (err) {
             return done(err);
@@ -49,7 +50,25 @@ var stategy = new localStrat({ usernameField: 'email' }, function (email, passwo
         });
     });
 });
-passport.use(stategy);
+var registerStrategy = new LocalStrategy(strategyOptions, function (email, password, done) {
+    repository.findOne({ email: email }, function (err, user) {
+        if (err) {
+            return done(err);
+        }
+        if (user) {
+            return done(null, false, { message: 'Email exists' });
+        }
+    });
+    var newUser = new repository({
+        email: email,
+        password: password
+    });
+    newUser.save(function (err) {
+        done(null, newUser);
+    });
+});
+passport.use('local-register', registerStrategy);
+passport.use('local-login', loginStrategy);
 app.use('/api', require('./routes'));
 console.log('About to crank up node');
 console.log('PORT=' + port);

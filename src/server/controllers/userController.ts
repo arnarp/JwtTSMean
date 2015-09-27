@@ -9,7 +9,7 @@ import passport = require('passport');
 import passportLocal = require('passport-local');
 var localStrat = passportLocal.Strategy;
 
-export function login(req: express.Request, res: express.Response, next: Function) {
+/*export function login(req: express.Request, res: express.Response, next: Function) {
     passport.authenticate('local', function(err: Error, user: any) {
         if (err) { next(err); }
         req.login(user, function(err) {
@@ -17,10 +17,13 @@ export function login(req: express.Request, res: express.Response, next: Functio
             sendToken(user, req, res);
         })
     })(req, res, next);
+}*/
+export function login(req: express.Request, res: express.Response) {
+    sendToken(req.user, req, res);
 }
 
 export function register(req: express.Request, res: express.Response) {
-    console.log('UserController register');
+/*    console.log('UserController register');
     console.log(req.body);
     var user = req.body;
     var newUser = new repository({
@@ -29,7 +32,8 @@ export function register(req: express.Request, res: express.Response) {
     });
     newUser.save(function(err) {
         sendToken(newUser, req, res);
-    });
+    });*/
+    sendToken(req.user, req, res);
 }
 
 function sendToken(user: IUser, req: express.Request, res: express.Response) {

@@ -5,10 +5,11 @@ var data = require('./data');
 var userController = require("./controllers/userController");
 //import jwtService = require('./services/jwtService');
 var jwtService = require('jwt-simple');
+var passport = require('passport');
 router.get('/people', getPeople);
 router.get('/person/:id', getPerson);
-router.post('/register', userController.register);
-router.post('/login', userController.login);
+router.post('/register', passport.authenticate('local-register'), userController.register);
+router.post('/login', passport.authenticate('local-login'), userController.login);
 router.get('/*', four0four.notFoundMiddleware);
 module.exports = router;
 //////////////

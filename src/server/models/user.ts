@@ -3,7 +3,9 @@ import bcrypt = require('bcrypt');
 
 var userSchema = new mongoose.Schema({
     email: String,
-    password: String
+    password: String,
+    googleId: String,
+    displayName: String
 });
 
 userSchema.pre('save', function(next: Function) {
@@ -36,6 +38,8 @@ userSchema.method('comparePasswords',
 export interface IUser extends mongoose.Document {
     email: string;
     password: string;
+    googleId: string;
+    displayName: string;
     toVm(): IUser,
     comparePasswords(password: string,
         callback: (err: Error, same: boolean) => void): void;

@@ -6,7 +6,8 @@ namespace app.core {
         .config(httpInterceptorConfig)
         .config(toastrConfig)
         .config(configure)
-        .value('config', config);
+        .value('config', config)
+        .run(googleAuthConfig);
 
     var config = {
         appErrorPrefix: '[helloWorld Error] ',
@@ -30,5 +31,17 @@ namespace app.core {
             $logProvider.debugEnabled(true);
         }
         exceptionHandlerProvider.configure(config.appErrorPrefix);
+    }
+
+    googleAuthConfig.$inject = ['$window'];
+    function googleAuthConfig($window: ng.IWindowService) {
+        var params = $window.location.search.substring(1);
+        if (params &&
+            $window.opener &&
+            $window.opener.location.origin === $window.location.origin) {
+            var pair = params.split('=');
+            var code = decodeURIComponent(pair[1]);
+            $window.opener.postMessage(code, $window.location.origin);
+        }
     }
 }

@@ -6,7 +6,6 @@ namespace app.core {
 		getToken(): string;
 		isAuthenticated(): boolean;
 		removeToken(): void;
-		googleAuth: () => void;
 	}
 	export class TokenAuthService implements IAuthService {
 		static $inject: Array<string> = ['$window'];
@@ -37,25 +36,6 @@ namespace app.core {
 		removeToken() {
 			this.cachedToken = null;
 			this.storage.removeItem(this.tokenKey);
-		}
-
-		googleAuth = () => {
-			var clientId = '88579833395-a5p8a46ompaopj9ptvluf3v2pila71e5.apps.googleusercontent.com';
-			var endPoint = 'https://accounts.google.com/o/oauth2/auth';
-			var params = [
-				'response_type=code',
-				`client_id=${clientId}`,
-				`redirect_uri=${this.$window.location.origin}`,
-				'scope=profile email'
-			];
-			var url = `${endPoint}?${params.join('&') }`;
-			var size = 500;
-			var width = `width=${size}`;
-			var height = `height=${size}`;
-			var left = `left=${(this.$window.outerWidth - size) / 2}`;
-			var top = `top=${(this.$window.outerHeight - size) / 2.5}`;
-			var options = `${width},${height},${left},${top}`;
-			this.$window.open(url, '', options);
 		}
 	}
 

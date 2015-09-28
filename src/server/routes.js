@@ -10,6 +10,7 @@ router.get('/people', getPeople);
 router.get('/person/:id', getPerson);
 router.post('/register', passport.authenticate('local-register'), userController.register);
 router.post('/login', passport.authenticate('local-login'), userController.login);
+router.post('/auth/google', userController.googleLogin);
 router.get('/*', four0four.notFoundMiddleware);
 module.exports = router;
 //////////////

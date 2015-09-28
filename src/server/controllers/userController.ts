@@ -7,6 +7,7 @@ import IUser = userModel.IUser;
 import repository = userModel.repository;
 import passport = require('passport');
 import passportLocal = require('passport-local');
+import request = require('request');
 var localStrat = passportLocal.Strategy;
 
 /*export function login(req: express.Request, res: express.Response, next: Function) {
@@ -15,7 +16,7 @@ var localStrat = passportLocal.Strategy;
         req.login(user, function(err) {
             if (err) { next(err); }
             sendToken(user, req, res);
-        })
+        })d
     })(req, res, next);
 }*/
 export function login(req: express.Request, res: express.Response) {
@@ -34,6 +35,52 @@ export function register(req: express.Request, res: express.Response) {
         sendToken(newUser, req, res);
     });*/
     sendToken(req.user, req, res);
+}
+
+export function googleLogin(req: express.Request, res: express.Response, next: Function) {
+    var params = {
+        client_id: req.body.clientId,
+        redirect_uri: req.body.redirectUri,
+        code: req.body.code,
+        grant_type: 'authorization_code',
+        client_secret: 'JiBHMfu3TooQudrhluAKmcbj'
+    };
+    var url = 'https://www.googleapis.com/oauth2/v3/token';
+    var options = {
+        json: true,
+        form: params,
+
+    };
+    request.post(url, options, function(err, resp, token) {
+        var accessToken = token.access_token;
+        var headers: request.Headers = {
+            'Authorization': `Bearer ${accessToken}`
+        };
+        var o: request.Options;
+        var apiUrl = 'https://www.googleapis.com/plus/v1/people/me';
+        request.get({
+            url: apiUrl,
+            headers: headers,
+            json: true
+        }, function(err, resp, profile) {
+            console.log(profile);
+            repository.findOne({ googleId: profile.id }, function(err, foundUser) {
+                if (foundUser) {
+                    return sendToken(foundUser, req, res);
+                }
+                var newUser = new repository({
+                    googleId: profile.id,
+                    displayName: profile.displayName
+                });
+                newUser.save(function(err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    return sendToken(newUser, req, res);
+                })
+            })
+        });
+    });
 }
 
 function sendToken(user: IUser, req: express.Request, res: express.Response) {

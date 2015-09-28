@@ -4,21 +4,14 @@ var app;
     (function (user) {
         'use strict';
         var LoginController = (function () {
-            function LoginController($http, userService, authService, $state) {
-<<<<<<< HEAD
+            function LoginController(userService, authService, $state) {
                 var _this = this;
-=======
->>>>>>> passport-auth
-                this.$http = $http;
                 this.userService = userService;
                 this.authService = authService;
                 this.$state = $state;
-<<<<<<< HEAD
                 this.google = function () {
-                    _this.authService.googleAuth();
+                    _this.userService.googleLogin();
                 };
-=======
->>>>>>> passport-auth
             }
             /////	Methods			/////
             LoginController.prototype.submit = function () {
@@ -26,7 +19,7 @@ var app;
                 this.userService.login(this.email, this.password)
                     .then(function () { return _this.$state.go('home'); });
             };
-            LoginController.$inject = ['$http', 'userService',
+            LoginController.$inject = ['userService',
                 'authService', '$state'];
             return LoginController;
         })();

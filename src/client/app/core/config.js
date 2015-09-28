@@ -8,7 +8,8 @@ var app;
             .config(httpInterceptorConfig)
             .config(toastrConfig)
             .config(configure)
-            .value('config', config);
+            .value('config', config)
+            .run(googleAuthConfig);
         var config = {
             appErrorPrefix: '[helloWorld Error] ',
             appTitle: 'helloWorld'
@@ -28,6 +29,17 @@ var app;
                 $logProvider.debugEnabled(true);
             }
             exceptionHandlerProvider.configure(config.appErrorPrefix);
+        }
+        googleAuthConfig.$inject = ['$window'];
+        function googleAuthConfig($window) {
+            var params = $window.location.search.substring(1);
+            if (params &&
+                $window.opener &&
+                $window.opener.location.origin === $window.location.origin) {
+                var pair = params.split('=');
+                var code = decodeURIComponent(pair[1]);
+                $window.opener.postMessage(code, $window.location.origin);
+            }
         }
     })(core = app.core || (app.core = {}));
 })(app || (app = {}));

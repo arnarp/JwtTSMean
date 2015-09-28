@@ -6,6 +6,7 @@ namespace app.user {
 			: ng.IPromise<UserLoginResp>;
 		login(email: string, password: string)
 			: ng.IPromise<UserLoginResp>;
+		googleLogin: () => void;
 	}
 	export interface User {
 		email: string;
@@ -21,14 +22,15 @@ namespace app.user {
 
 	export class UserService implements IUserService {
 		static $inject: Array<string> = [
-			'$http', '$q', 'exception', 'logger', 'authService'
+			'$http', '$q', 'exception', 'logger', 'authService', '$window'
 		];
 		constructor(
 			private $http: ng.IHttpService,
 			private $q: ng.IQService,
 			private exception: blocks.exception.IException,
             private logger: blocks.logger.Logger,
-			private authService: app.core.IAuthService) {
+			private authService: app.core.IAuthService,
+			private $window: ng.IWindowService) {
 		}
 
 		register = (email: string, password: string) =>
@@ -46,6 +48,38 @@ namespace app.user {
 				.then(this.setToken)
 				.then(this.alertLoginSuccess)
 				.catch(this.onLoginRejected);
+
+		googleLogin = () => {
+			var clientId = '88579833395-a5p8a46ompaopj9ptvluf3v2pila71e5.apps.googleusercontent.com';
+			var endPoint = 'https://accounts.google.com/o/oauth2/auth';
+			var params = [
+				'response_type=code',
+				`client_id=${clientId}`,
+				`redirect_uri=${this.$window.location.origin}`,
+				'scope=profile email'
+			];
+			var url = `${endPoint}?${params.join('&') }`;
+			var size = 500;
+			var width = `width=${size}`;
+			var height = `height=${size}`;
+			var left = `left=${(this.$window.outerWidth - size) / 2}`;
+			var top = `top=${(this.$window.outerHeight - size) / 2.5}`;
+			var options = `${width},${height},${left},${top}`;
+			var popup: ng.IWindowService = this.$window.open(url, '', options);
+			this.$window.focus();
+			this.$window.addEventListener('message', (event) => {
+				if (event.origin === this.$window.location.origin) {
+					console.log(event.data);
+					popup.close();
+					var code = event.data;
+					this.$http.post('api/auth/google', {
+						code: code,
+						clientId: clientId,
+						redirectUri: this.$window.location.origin
+					 });
+				}
+			});
+		}
 
         private extractData =
 		(response: ng.IHttpPromiseCallbackArg<UserLoginResp>) => response.data;
